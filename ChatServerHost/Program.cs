@@ -13,6 +13,8 @@ namespace ChatServerHost
 
             actorRef.Tell("Kees");
             actorRef.Tell(11);
+            actorRef.Tell(11);
+            actorRef.Tell("Kees");
 
             Console.WriteLine("press any key");
             Console.ReadLine();

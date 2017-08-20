@@ -7,18 +7,36 @@ namespace ActorModel
     {
         public HelloActor()
         {
-            Receive<string>(msg => HandleString(msg));
-            ReceiveAny(msg => HandleAny());
+            Become(Default);
         }
 
-        private void HandleAny()
+        private void Default()
         {
-            Console.WriteLine("Huh ?");
+            Receive<string>(msg =>
+            {
+                Console.WriteLine("Hello: {0}", msg);
+                Become(NonDefault);
+            });
+            ReceiveAny(msg =>
+            {
+                Console.WriteLine("Huh ?");
+                Become(NonDefault);
+            });
+            
         }
 
-        private void HandleString(string msg)
+        private void NonDefault()
         {
-            Console.WriteLine("Hello: {0}", msg);
+            Receive<string>(msg =>
+            {
+                Console.WriteLine("Hello hello: {0}", msg);
+                Become(Default);
+            });
+            ReceiveAny(msg =>
+            {
+                Console.WriteLine("Huh huh ?");
+                Become(Default);
+            });
         }
     }
 }
