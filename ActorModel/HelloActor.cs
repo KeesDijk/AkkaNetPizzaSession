@@ -3,19 +3,22 @@ using System;
 
 namespace ActorModel
 {
-    public class HelloActor : UntypedActor
+    public class HelloActor : ReceiveActor
     {
-        protected override void OnReceive(object message)
+        public HelloActor()
         {
-            var msg = message as string;
-            if (msg != null)
-            {
-                Console.WriteLine("Hello: {0}", msg);
-            }
-            else
-            {
-                Console.WriteLine("Huh ?");
-            }
+            Receive<string>(msg => HandleString(msg));
+            ReceiveAny(msg => HandleAny());
+        }
+
+        private void HandleAny()
+        {
+            Console.WriteLine("Huh ?");
+        }
+
+        private void HandleString(string msg)
+        {
+            Console.WriteLine("Hello: {0}", msg);
         }
     }
 }
