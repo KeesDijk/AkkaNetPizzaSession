@@ -1,5 +1,7 @@
-﻿using Akka.TestKit;
+﻿using Akka.Actor;
 using Akka.TestKit.Xunit2;
+using ChatServerInfraStructure;
+using Moq;
 using Xunit;
 
 namespace ActorModel.Tests
@@ -10,12 +12,15 @@ namespace ActorModel.Tests
         public void ShouldBeAbleToStartHelloActor()
         {
             //Arrange
-            TestActorRef<HelloActor> actor = ActorOfAsTestActorRef<HelloActor>();
+            var mockWriter = new Mock<IWriter>();
+            
+            var actor = ActorOfAsTestActorRef<HelloActor>(Props.Create(() => new HelloActor(mockWriter.Object)));
 
             //Act
             actor.Tell("Hallo");
 
             //Assert
+            mockWriter.Verify(_ => _.WriteLine(It.IsAny<string>(), It.IsAny<object[]>()),Times.Once);
         }
     }
 }

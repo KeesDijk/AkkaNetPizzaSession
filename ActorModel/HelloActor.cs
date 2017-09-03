@@ -1,12 +1,14 @@
 ﻿using Akka.Actor;
-using System;
+using ChatServerInfraStructure;
 
 namespace ActorModel
 {
     public class HelloActor : ReceiveActor
     {
-        public HelloActor()
+        private IWriter _writer;
+        public HelloActor(IWriter writer)
         {
+            _writer = writer;
             Become(Default);
         }
 
@@ -14,12 +16,12 @@ namespace ActorModel
         {
             Receive<string>(msg =>
             {
-                Console.WriteLine("Hello: {0}", msg);
+                _writer.WriteLine("Hello: {0}", msg);
                 Become(NonDefault);
             });
             ReceiveAny(msg =>
             {
-                Console.WriteLine("Huh ?");
+                _writer.WriteLine("Huh ?");
                 Become(NonDefault);
             });
             
@@ -29,12 +31,12 @@ namespace ActorModel
         {
             Receive<string>(msg =>
             {
-                Console.WriteLine("Hello hello: {0}", msg);
+                _writer.WriteLine("Hello hello: {0}", msg);
                 Become(Default);
             });
             ReceiveAny(msg =>
             {
-                Console.WriteLine("Huh huh ?");
+                _writer.WriteLine("Huh huh ?");
                 Become(Default);
             });
         }
