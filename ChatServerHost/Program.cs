@@ -1,10 +1,14 @@
 ﻿using ActorModel;
+using ActorModel.Messages;
+using ActorModel.Messages.Commands;
+using ActorModel.Messages.Requests;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Ninject;
 using ChatServerInfraStructure;
 using Ninject;
 using System;
+using System.Threading.Tasks;
 
 namespace ChatServerHost
 {
@@ -20,12 +24,20 @@ namespace ChatServerHost
 
             IDependencyResolver resolver = new NinjectDependencyResolver(container, system);
 
-            IActorRef actorRef = system.ActorOf(resolver.Create<HelloActor>());
+            IActorRef actorRef = system.ActorOf(resolver.Create<UserManagerActor>());
 
-            actorRef.Tell("Kees");
-            actorRef.Tell(11);
-            actorRef.Tell(11);
-            actorRef.Tell("Kees");
+            actorRef.Tell(new CreateUser("Kees"));
+            actorRef.Tell(new CreateUser("Piet"));
+            actorRef.Tell(new CreateUser("Karel"));
+
+            Task<AllUsers> task = actorRef.Ask<AllUsers>(new ListAllUsers());
+
+            AllUsers taskResult = task.Result;
+                    
+            foreach (var user in taskResult.Users)
+            {
+                Console.WriteLine(user.Value);
+            }
 
             Console.WriteLine("press any key");
             Console.ReadLine();
