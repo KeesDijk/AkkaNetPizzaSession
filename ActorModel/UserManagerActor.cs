@@ -21,7 +21,7 @@ namespace ActorModel
                 _logging.Info("Creating user: {0}", msg.Id);
                 users[msg.Id] = msg.Name;
             });
-            Receive<ListAllUsers>((msg) =>
+            Receive<ListAllUsers>(msg =>
             {
                 Context.Sender.Tell(new AllUsers(users));
             });
