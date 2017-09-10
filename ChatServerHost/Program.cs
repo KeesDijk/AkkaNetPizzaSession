@@ -3,10 +3,6 @@ using ActorModel.Messages;
 using ActorModel.Messages.Commands;
 using ActorModel.Messages.Requests;
 using Akka.Actor;
-using Akka.DI.Core;
-using Akka.DI.Ninject;
-using ChatServerInfraStructure;
-using Ninject;
 using System;
 using System.Threading.Tasks;
 
@@ -16,19 +12,13 @@ namespace ChatServerHost
     {
         static void Main(string[] args)
         {
-            var container = new StandardKernel();
-            container.Bind<IWriter>().To<ConsoleWriter>();
-            container.Bind<HelloActor>().ToSelf();
-
             ActorSystem system = ActorSystem.Create("MyChatServer");
 
-            IDependencyResolver resolver = new NinjectDependencyResolver(container, system);
-
-            IActorRef userManeger = system.ActorOf(resolver.Create<UserManagerActor>());
+            IActorRef userManeger = system.ActorOf<UserManagerActor>();
 
             CreateUsers(userManeger);
 
-            var roomManager = system.ActorOf(resolver.Create<RoomManagerActor>());
+            var roomManager = system.ActorOf<RoomManagerActor>("RoomManager");
 
             roomManager.Tell(new CreateRoom("Subject1"));
             roomManager.Tell(new CreateRoom("Subject2"));
