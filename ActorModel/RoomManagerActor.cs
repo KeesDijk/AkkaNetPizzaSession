@@ -38,6 +38,11 @@ namespace ActorModel
                     kv => kv.Value.Item1
                 )));
             });
+
+            Receive<JoinRoom>(msg =>
+            {
+                _rooms[msg.Room].Item2.Forward(msg);
+            });
         }
     }
 }

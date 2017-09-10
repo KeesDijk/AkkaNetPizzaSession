@@ -45,6 +45,7 @@
     <Compile Include="Messages\AllUsers.cs" />
     <Compile Include="Messages\Commands\CreateRoom.cs" />
     <Compile Include="Messages\Commands\CreateUser.cs" />
+    <Compile Include="Messages\Commands\JoinRoom.cs" />
     <Compile Include="Messages\Requests\ListAllRooms.cs" />
     <Compile Include="Messages\Requests\ListAllUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
