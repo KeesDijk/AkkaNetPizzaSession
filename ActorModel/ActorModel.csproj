@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExternalSystem\ExternalSystemBridgeActor.cs" />
+    <Compile Include="ExternalSystem\IEventPusher.cs" />
     <Compile Include="HelloActor.cs" />
     <Compile Include="Messages\AllRooms.cs" />
     <Compile Include="Messages\AllUsers.cs" />

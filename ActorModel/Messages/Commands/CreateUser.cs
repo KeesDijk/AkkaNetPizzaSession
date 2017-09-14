@@ -4,12 +4,13 @@ namespace ActorModel.Messages.Commands
 {
     public class CreateUser
     {
-        public CreateUser(string name)
+        public CreateUser(Guid id, string name)
         {
             Name = name;
+            Id = id;
         }
 
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private set; }
         public string Name { get; private set; }
     }
 }

@@ -24,6 +24,7 @@ namespace ActorModel
                 if (msg.Room.Equals(_id) && !_users.Contains(msg.User))
                 {
                     _users.Add(msg.User);
+                    _logging.Info("Added user:{0}, nr of users{1}", msg.User, _users.Count);
                 }
             });
         }

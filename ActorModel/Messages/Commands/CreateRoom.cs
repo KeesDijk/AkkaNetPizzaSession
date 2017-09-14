@@ -4,12 +4,13 @@ namespace ActorModel.Messages.Commands
 {
     public class CreateRoom
     {
-        public CreateRoom(string subject)
+        public CreateRoom(Guid id, string subject)
         {
             Subject = subject;
+            Id = id;
         }
 
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private set; } 
         public string Subject { get; private set; }
     }
 }

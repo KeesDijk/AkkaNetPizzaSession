@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+
+<div data-bind="visible: !isJoined()">
+    <h2>Join Chat</h2>
+
+    <form data-bind="submit: joinGame">
+        Name : <input data-bind="value: newUserName" required />
+        <button type="submit">Join Chat</button>
+    </form>
+</div>
+
+<div data-bind="visible: isJoined()">
+    <h2><span data-bind="text: thisUser().userName()"></span></h2>
+
+    <h3>Health</h3>
+    <p><span data-bind="text: thisUser().health()"></span></p>
+
+    <h3 data-bind="visible: !thisUser().isAlive()" style="color: red">Dead</h3>
+</div>
+
+<div>
+    <h2>Other players</h2>
+
+    <div data-bind="foreach : otherUsers">
+        <hr />
+
+        <p data-bind="text: userName"></p>
+        <p data-bind="text: health"></p>
+
+        <div data-bind="visible: isAlive() && $parent.thisUser().isAlive()">
+            <form data-bind="submit: attack">
+                <button type="submit">Attack</button>
+            </form>
+        </div>
+
+        <h4 data-bind="visible: !isAlive()" style="color: red">Dead</h4>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var gamehub = $.connection.chatHub;
+
+        gamehub.client.playerJoined = function(playerName, health) {
+            var isMe = playerName === vm.newPlayerName();
+
+            if (isMe) {
+                vm.thisPlayer().playerName(playerName);
+                vm.thisPlayer().changeHealth(health);
+                vm.isJoined(true);
+            } else {
+                var playerIsInList = ko.utils.arrayFirst(vm.otherPlayers(),
+                    function(player) {
+                        var boolean = playerName === player.playerName();
+                        return boolean;
+                    });
+
+                if (!playerIsInList) {
+                    vm.otherPlayers.push(new UserViewModel(playerName, health));
+                }
+            }
+        }
+
+        gamehub.client.updatePlayerHealth = function(playerName, health) {
+            if (vm.thisPlayer().playerName() === playerName) {
+                vm.thisPlayer().changeHealth(health);
+            } else {
+                vm.otherPlayers().forEach(function(otherPlayer) {
+                    if (playerName === otherPlayer.playerName()) {
+                        otherPlayer.changeHealth(health);
+                    }
+                });
+            }
+        }
+
+        $.connection.hub.start();
+
+        var UserViewModel = function(userName, health) {
+            var self = this;
+
+            self.attack = function() {
+                gamehub.server.attack(self.playerName());
+            }
+
+            self.changeHealth = function(newHealth) {
+                self.health(newHealth);
+
+                if (newHealth < 0) {
+                    self.isAlive(false);
+                }
+            }
+
+            self.userName = ko.observable(userName);
+            self.id = ko.observable(guid());
+            self.isAlive = ko.observable(true);
+            self.health = ko.observable(NaN);
+
+            self.changeHealth(health);
+        }
+
+        var ChatViewModel = function() {
+            var self = this;
+
+            self.newUserName = ko.observable('');
+            self.isJoined = ko.observable(false);
+
+            self.thisUser = ko.observable(new UserViewModel('', NaN));
+            self.otherUsers = ko.observableArray();
+
+            self.joinGame = function() {
+                gamehub.server.joinGame(self.newUserName());
+            }
+
+        }
+
+        var vm = new ChatViewModel();
+        ko.applyBindings(vm);
+    </script>
+}
